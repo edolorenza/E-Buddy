@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UserDetailView: View {
     
-    @ObservedObject var userVM: UserViewModel
+    @EnvironmentObject private var userVM: UserViewModel
     @State private var showImagePicker: Bool = false
     @State private var profileImage: UIImage?
     let item: UserJson
