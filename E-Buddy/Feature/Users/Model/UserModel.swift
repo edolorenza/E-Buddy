@@ -10,6 +10,11 @@ import Foundation
 struct UserJson: Codable, Identifiable {
     let id = UUID()
     let uid: String
+    let name: String?
+    let price: Double?
+    let rating: Double?
+    let totalRating: Int?
+    let isOnline: Bool
     let email: String
     let phoneNumber: String
     let gender: Int
@@ -24,6 +29,11 @@ struct UserJson: Codable, Identifiable {
     enum CodingKeys: String, CodingKey {
         case uid
         case email
+        case name
+        case price
+        case rating
+        case totalRating = "total_rating"
+        case isOnline = "is_online"
         case phoneNumber = "phone_number"
         case gender = "ge"
         case profileImage = "profile_image"
@@ -38,6 +48,14 @@ struct UserJson: Codable, Identifiable {
         case nil:
             return ""
         }
+    }
+    
+    var priceNominal: String {
+        return "\(price ?? 0)".components(separatedBy: ".").first ?? ""
+    }
+    
+    var priceDecimal: String {
+        return "\(price ?? 0)".components(separatedBy: ".").last ?? ""
     }
 }
 

@@ -8,21 +8,23 @@
 import SwiftUI
 
 struct UserListView: View {
-
+    
     @EnvironmentObject private var userVM: UserViewModel
+    let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
     
     var body: some View {
         VStack(alignment: .leading){
             ScrollView(.vertical) {
-                ForEach(userVM.userData){ item in
-                    VStack(alignment: .leading, spacing: 16){
+                LazyVGrid(columns: columns, spacing: 8){
+                    ForEach(userVM.userData){ item in
                         NavigationLink(destination: UserDetailView(item: item)) {
                             UserItemView(item: item)
                         }
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.top, 16)
             }
         }
-        .padding(.top, 16)
     }
 }
