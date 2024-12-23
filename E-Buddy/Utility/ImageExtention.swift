@@ -28,3 +28,8 @@ extension Image {
      }
 
 }
+
+extension Color {
+    static let mainFontColor = Color("fontColor")
+}
+

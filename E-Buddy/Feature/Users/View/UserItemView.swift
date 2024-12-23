@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UserItemView: View {
     
+    @Environment(\.colorScheme) var colorScheme
     let item: UserJson
     
     var body: some View {
@@ -34,9 +35,9 @@ struct UserItemView: View {
             .padding(.top, 8)
         }
         .padding(.all, 8)
-        .background(Color.white)
+        .background(colorScheme == .dark ? .black : .white)
         .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.3), radius: 5, x: 0, y: 5)
+        .shadow(color: colorScheme == .dark ? Color.white.opacity(0.3) :  Color.black.opacity(0.3), radius: 5, x: 0, y: 1)
     }
 }
 
@@ -47,7 +48,7 @@ extension UserItemView {
             HStack(spacing: 8){
                 Text(self.item.name ?? "")
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(Color.black)
+                    .foregroundColor(Color.mainFontColor)
                 Circle()
                     .fill(self.item.isOnline ? Color.green : Color.red)
                     .frame(width: 10, height: 10)
@@ -130,15 +131,15 @@ extension UserItemView {
                 .overlay(
                     ZStack {
                         Circle()
-                            .fill(Color.black.opacity(0.4))
+                            .fill(colorScheme == .dark ?  Color.white .opacity(0.5) :  Color.black.opacity(0.5))
                             .overlay(
                                 Circle()
-                                    .stroke(Color.white, lineWidth: 1)
+                                    .stroke(colorScheme == .dark ? Color.black : Color.white, lineWidth: 1)
                             )
                         Text("+3")
                             .multilineTextAlignment(.center)
                             .font(.system(size: 14))
-                            .foregroundColor(Color.white)
+                            .foregroundColor(colorScheme == .dark ? Color.black : Color.white)
                     }
                 )
             
@@ -160,7 +161,7 @@ extension UserItemView {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundStyle(Color.white)
+                .foregroundStyle(colorScheme == .dark ? Color.black : Color.white)
                 .frame(width: 18, height: 18)
         }
         .padding(.trailing, 8)
@@ -176,7 +177,7 @@ extension UserItemView {
                     .frame(width: 16, height: 16)
                 Text(String(format: "%.2f", rating))
                     .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(.mainFontColor)
                 
                 Text("(\(totalRating))")
                     .font(.system(size: 16, weight: .medium))
@@ -196,11 +197,11 @@ extension UserItemView {
                 HStack(alignment: .bottom, spacing: 0) {
                     Text(self.item.priceNominal)
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.mainFontColor)
                     
                     Text(".\(self.item.priceDecimal)/1Hr")
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.mainFontColor)
                 }
             }
         }
