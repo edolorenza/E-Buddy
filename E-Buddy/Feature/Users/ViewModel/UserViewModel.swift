@@ -12,7 +12,13 @@ class UserViewModel: ObservableObject {
     
     @Published var userData: [UserJson] = []
     @Published var errorMessage: String? = nil
-    
+    @Published var sortOption: SortOption = .lastActive {
+            didSet { fetchUsers() }
+    }
+    @Published var filterByGender: Bool = false {
+            didSet { fetchUsers() }
+    }
+
     private let firebaseService: FirebaseServices
     private var cancellables = Set<AnyCancellable>()
     
@@ -21,7 +27,7 @@ class UserViewModel: ObservableObject {
     }
     
     func fetchUsers() {
-        firebaseService.fetchUsers()
+        firebaseService.fetchOrderedUsers(sortOption: self.sortOption, filterByFemale: self.filterByGender)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
@@ -67,5 +73,4 @@ class UserViewModel: ObservableObject {
             })
             .store(in: &cancellables)
     }
-    
 }

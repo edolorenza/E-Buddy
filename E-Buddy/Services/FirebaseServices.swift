@@ -17,64 +17,40 @@ final class FirebaseServices {
     private var cancellables = Set<AnyCancellable>()
     private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
-    func fetchUsers(with query: Query = FirebaseServices.database) -> AnyPublisher<[UserJson], Error> {
-        Future<[UserJson], Error> { promise in
-            query.getDocuments { snapshot, error in
+    func uploadImageUser(uid: String, image: UIImage) -> AnyPublisher<URL, Error> {
+        beginBackgroundTask()
+        
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            endBackgroundTask()
+            return Fail(error: NSError(
+                domain: "ImageError",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid image data."]
+            )).eraseToAnyPublisher()
+        }
+        
+        let storageRef = storage.reference().child("profile_images/\(uid).jpg")
+        
+        return Future<URL, Error> { [weak self] promise in
+            storageRef.putData(imageData, metadata: nil) { metadata, error in
                 if let error = error {
+                    self?.endBackgroundTask()
                     promise(.failure(error))
                     return
                 }
                 
-                guard let documents = snapshot?.documents else {
-                    promise(.success([]))
-                    return
-                }
-                
-                do {
-                    let users = try documents.map { try $0.data(as: UserJson.self) }
-                    promise(.success(users))
-                } catch {
-                    promise(.failure(error))
+                storageRef.downloadURL { url, error in
+                    self?.endBackgroundTask()
+                    if let error = error {
+                        promise(.failure(error))
+                    } else if let url = url {
+                        promise(.success(url))
+                    }
                 }
             }
         }
         .eraseToAnyPublisher()
     }
-    
-    func uploadImageUser(uid: String, image: UIImage) -> AnyPublisher<URL, Error> {
-           beginBackgroundTask()
-           
-           guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-               endBackgroundTask()
-               return Fail(error: NSError(
-                   domain: "ImageError",
-                   code: -1,
-                   userInfo: [NSLocalizedDescriptionKey: "Invalid image data."]
-               )).eraseToAnyPublisher()
-           }
-           
-           let storageRef = storage.reference().child("profile_images/\(uid).jpg")
-           
-           return Future<URL, Error> { [weak self] promise in
-               storageRef.putData(imageData, metadata: nil) { metadata, error in
-                   if let error = error {
-                       self?.endBackgroundTask()
-                       promise(.failure(error))
-                       return
-                   }
-                   
-                   storageRef.downloadURL { url, error in
-                       self?.endBackgroundTask()
-                       if let error = error {
-                           promise(.failure(error))
-                       } else if let url = url {
-                           promise(.success(url))
-                       }
-                   }
-               }
-           }
-           .eraseToAnyPublisher()
-       }
     
     func updateUserProfileImageURL(userID: String, url: String) -> AnyPublisher<Void, Error> {
         Future<Void, Error> { promise in
@@ -84,6 +60,44 @@ final class FirebaseServices {
                 } else {
                     promise(.success(()))
                 }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func fetchOrderedUsers(sortOption: SortOption, filterByFemale: Bool) -> AnyPublisher<[UserJson], Never> {
+        var query: Query = FirebaseServices.database
+        
+        if filterByFemale {
+            query = query.whereField("ge", isEqualTo: 0)
+        }
+        
+        switch sortOption {
+        case .lastActive:
+            query = query.order(by: "last_active", descending: true)
+        case .rating:
+            query = query.order(by: "rating", descending: true)
+        case .price:
+            query = query.order(by: "price", descending: false)
+        }
+        
+        return Future<[UserJson], Never> { promise in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    print("Firestore query error: \(error.localizedDescription)")
+                    promise(.success([]))
+                    return
+                }
+                
+                guard let snapshot = snapshot else {
+                    promise(.success([]))
+                    return
+                }
+                
+                let users = snapshot.documents.compactMap { doc -> UserJson? in
+                    try? doc.data(as: UserJson.self)
+                }
+                promise(.success(users))
             }
         }
         .eraseToAnyPublisher()
@@ -102,5 +116,5 @@ final class FirebaseServices {
             backgroundTask = .invalid
         }
     }
-
+    
 }
