@@ -15,6 +15,7 @@ final class FirebaseServices {
     private static let database = Firestore.firestore().collection("USERS")
     private let storage = Storage.storage()
     private var cancellables = Set<AnyCancellable>()
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
     func fetchUsers(with query: Query = FirebaseServices.database) -> AnyPublisher<[UserJson], Error> {
         Future<[UserJson], Error> { promise in
@@ -41,33 +42,39 @@ final class FirebaseServices {
     }
     
     func uploadImageUser(uid: String, image: UIImage) -> AnyPublisher<URL, Error> {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            return Fail(error: NSError(
-                domain: "ImageError",
-                code: -1,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid image data."]
-            )).eraseToAnyPublisher()
-        }
-        
-        let storageRef = storage.reference().child("profile_images/\(uid).jpg")
-        
-        return Future<URL, Error> { promise in
-            storageRef.putData(imageData, metadata: nil) { metadata, error in
-                if let error = error {
-                    promise(.failure(error))
-                    return
-                }
-                
-                storageRef.downloadURL { url, error in
-                    if let error = error {
-                        promise(.failure(error))
-                    } else if let url = url {
-                        promise(.success(url))
-                    }
-                }
-            }
-        }.eraseToAnyPublisher()
-    }
+           beginBackgroundTask()
+           
+           guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+               endBackgroundTask()
+               return Fail(error: NSError(
+                   domain: "ImageError",
+                   code: -1,
+                   userInfo: [NSLocalizedDescriptionKey: "Invalid image data."]
+               )).eraseToAnyPublisher()
+           }
+           
+           let storageRef = storage.reference().child("profile_images/\(uid).jpg")
+           
+           return Future<URL, Error> { [weak self] promise in
+               storageRef.putData(imageData, metadata: nil) { metadata, error in
+                   if let error = error {
+                       self?.endBackgroundTask()
+                       promise(.failure(error))
+                       return
+                   }
+                   
+                   storageRef.downloadURL { url, error in
+                       self?.endBackgroundTask()
+                       if let error = error {
+                           promise(.failure(error))
+                       } else if let url = url {
+                           promise(.success(url))
+                       }
+                   }
+               }
+           }
+           .eraseToAnyPublisher()
+       }
     
     func updateUserProfileImageURL(userID: String, url: String) -> AnyPublisher<Void, Error> {
         Future<Void, Error> { promise in
@@ -82,4 +89,18 @@ final class FirebaseServices {
         .eraseToAnyPublisher()
     }
     
+    private func beginBackgroundTask() {
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "FirebaseUpload") {
+            UIApplication.shared.endBackgroundTask(self.backgroundTask)
+            self.backgroundTask = .invalid
+        }
+    }
+    
+    private func endBackgroundTask() {
+        if backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
+        }
+    }
+
 }

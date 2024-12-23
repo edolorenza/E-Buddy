@@ -16,9 +16,22 @@
 		6B4098312D184B490040F788 /* E-Buddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E-Buddy.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6BC5A2542D191223004C69C8 /* Exceptions for "E-Buddy" folder in "E-Buddy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 6B4098302D184B490040F788 /* E-Buddy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6B4098332D184B490040F788 /* E-Buddy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6BC5A2542D191223004C69C8 /* Exceptions for "E-Buddy" folder in "E-Buddy" target */,
+			);
 			path = "E-Buddy";
 			sourceTree = "<group>";
 		};
@@ -270,7 +283,8 @@
 				DEVELOPMENT_TEAM = A6SVV7LMGJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy DEV";
+				INFOPLIST_FILE = "E-Buddy/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy STAG";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -305,7 +319,8 @@
 				DEVELOPMENT_TEAM = A6SVV7LMGJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy DEV";
+				INFOPLIST_FILE = "E-Buddy/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy STAG";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -403,6 +418,7 @@
 				DEVELOPMENT_TEAM = A6SVV7LMGJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "E-Buddy/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy STAG";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -494,6 +510,7 @@
 				DEVELOPMENT_TEAM = A6SVV7LMGJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "E-Buddy/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "E-Buddy STAG";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
