@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UserListView: View {
+
     @StateObject private var userVM = UserViewModel()
     
     var body: some View {
@@ -15,23 +16,9 @@ struct UserListView: View {
             ScrollView(.vertical) {
                 ForEach(userVM.userData){ item in
                     VStack(alignment: .leading, spacing: 16){
-                        HStack(alignment: .top){
-                            Circle()
-                                .frame(width: 60, height: 60)
-                                .foregroundColor(.gray)
-                            VStack(alignment: .leading, spacing: 4){
-                                Text(item.uid)
-                                    .foregroundColor(.black)
-                                Text(item.genderDescription)
-                                    .foregroundColor(.black)
-                                Text(item.phoneNumber)
-                                    .foregroundColor(.black)
-                                Text(item.email)
-                                    .foregroundColor(.black)
-                            }
-                            Spacer()
+                        NavigationLink(destination: UserDetailView(userVM: self.userVM, item: item)) {
+                            UserItemView(item: item)
                         }
-                        .padding(.horizontal, 16)
                     }
                 }
             }

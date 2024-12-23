@@ -9,10 +9,11 @@ import Foundation
 
 struct UserJson: Codable, Identifiable {
     let id = UUID()
-    var uid: String
-    var email: String
-    var phoneNumber: String
-    var gender: Int
+    let uid: String
+    let email: String
+    let phoneNumber: String
+    let gender: Int
+    let profileImage: String?
     var genderEnum: GenderEnum? {
         guard let theGender = GenderEnum(rawValue: gender) else {
             return nil
@@ -25,6 +26,7 @@ struct UserJson: Codable, Identifiable {
         case email
         case phoneNumber = "phone_number"
         case gender = "ge"
+        case profileImage = "profile_image"
     }
     
     var genderDescription: String {
